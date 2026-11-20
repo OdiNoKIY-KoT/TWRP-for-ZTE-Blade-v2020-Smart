@@ -1,0 +1,96 @@
+name: Build TWRP P963F05
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'device/**'
+      - '.github/workflows/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Cleanup disk
+      uses: rokibhasansagar/slimhub_actions@main
+
+    - name: Prepare environment
+      run: |
+        sudo apt-get update
+        DEBIAN_FRONTEND=noninteractive sudo apt-get install -yq \
+          gperf gcc-multilib g++-multilib libc6-dev lib32ncurses-dev \
+          x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev libxml2-utils \
+          xsltproc bc ccache lib32readline-dev lib32z1-dev lz4 libncurses-dev \
+          build-essential git libxml2-dev lzop pngcrush schedtool squashfs-tools \
+          imagemagick libbz2-dev lzma ncftp libncurses6 python3 tar zip unzip
+
+    - name: Install OpenJDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: zulu
+        java-version: '11'
+
+    - name: Install repo
+      run: |
+        mkdir -p ~/bin
+        curl -fsSL https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        sudo ln -sf ~/bin/repo /usr/bin/repo
+
+    - name: Init and sync TWRP manifest
+      run: |
+        mkdir workspace
+        cd workspace
+        git config --global user.name "OdiNoKIY-KoT"
+        git config --global user.email "60011844+OdiNoKIY-KoT@users.noreply.github.com"
+        repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp -b twrp-12.1
+        repo sync -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+      working-directory: ${{ github.workspace }}
+
+    - name: Place device tree
+      run: |
+        mkdir -p workspace/device/zte
+        cp -r device workspace/device/zte/P963F05
+
+    - name: Set swap
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 12
+
+    - name: Build recoveryimage
+      run: |
+        source build/envsetup.sh
+        export ALLOW_MISSING_DEPENDENCIES=true
+        export LC_ALL=C
+        lunch twrp_P963F05-eng
+        make recoveryimage -j$(nproc --all)
+      working-directory: ${{ github.workspace }}/workspace
+
+    - name: Collect artifacts
+      run: |
+        mkdir -p out
+        cp workspace/out/target/product/P963F05/recovery.img out/recovery.img
+        ls -la workspace/out/target/product/P963F05/ | head -40
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: twrp-P963F05-recovery
+        path: out/recovery.img
+
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: out/recovery.img
+        name: "TWRP P963F05 build ${{ github.run_id }}"
+        tag_name: "build-${{ github.run_id }}"
+        body: |
+          TWRP 12.1 for ZTE Blade V2020 Smart (P963F05, SC9863A)
+          Device tree: twrpdtgen + XvSvM fixes + partition/crypto corrections
+          NOTE: flash only after re-signing with rollback_index>=1 (resign.py --partition recovery)
