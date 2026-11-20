@@ -1,19 +1,23 @@
+English | [Русский](https://github.com/OdiNoKIY-KoT/TWRP-for-ZTE-Blade-v2020-Smart/blob/main/README_RU.md)
+
 TWRP for ZTE Blade V2020 Smart
 
-Device: ZTE Blade V2020 Smart
-Aliases: ZTE 8010 / P963F05
+Codename: ZTE 8010 / P963F05
+
+---
 
 About
 
 This repository contains an experimental test build of TWRP (Team Win Recovery Project) for the ZTE Blade V2020 Smart.
 
-This is a test version. It has been developed with the assistance of AI. It may contain bugs, incomplete functionality, or compatibility issues.
+«[!WARNING]
+This is an experimental test version developed with the assistance of AI. It may contain bugs, incomplete functionality, or compatibility issues.»
 
 Credits & Sources
 
 This project is based on existing device-specific sources:
 
-- Device Tree: Generated using "twrpdtgen", based on the device-specific version by "XvSvM".
+- Device Tree: Generated using "twrpdtgen", based on the device-specific version by "XvSvM" (https://github.com/XvSvM).
 - Additional modifications: Partition layout and encryption-related corrections assisted by AI.
 
 Disclaimer
