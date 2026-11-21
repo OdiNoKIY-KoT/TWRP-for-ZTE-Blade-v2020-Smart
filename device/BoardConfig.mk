@@ -157,8 +157,7 @@ TW_NO_EXFAT_FUSE := true
 # TW_EXCLUDE_ENCRYPTED_BACKUPS must stay EMPTY: TWRP Android.mk ifneq logic adds libopenaes when set!
 TW_NO_HAPTICS := true
 TW_NO_USB_STORAGE := true
-TW_INCLUDE_JPEG := false
-TW_INCLUDE_PNG := false
+# jpeg/png REQUIRED by minuitwrp UI - do not exclude
 TWRP_INCLUDE_LOGCAT := false
 TARGET_USES_LOGD := false
 TW_USE_MINUI_WITH_MEDIA := false
