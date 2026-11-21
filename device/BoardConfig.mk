@@ -111,7 +111,7 @@ BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 2
 
 # TWRP Configuration
 TW_THEME := portrait_hdpi
-TW_EXTRA_LANGUAGES := true
+TW_EXTRA_LANGUAGES := false
 TW_SCREEN_BLANK_ON_BOOT := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_USE_TOOLBOX := true
@@ -121,7 +121,24 @@ TW_EXCLUDE_TZDATA := true
 TW_EXCLUDE_NANO := true
 TW_EXCLUDE_BASH := true
 TW_EXCLUDE_PYTHON := true
-TW_INCLUDE_NTFS_3G := true
+TW_INCLUDE_NTFS_3G := false
 TW_INCLUDE_REPACKTOOLS := true
 TW_HAS_DOWNLOAD_MODE := false
 TW_NO_REBOOT_BOOTLOADER := false
+
+# Size: recovery partition 40MB - strip non-essential (build1 ramdisk was 48.7MB > 41.8MB limit)
+TW_EXCLUDE_SUPERSU := true
+TW_EXCLUDE_TWRPAPP := true
+TW_EXCLUDE_APEX := true
+TW_EXCLUDE_MTP := true
+TW_NO_EXFAT := true
+TW_NO_EXFAT_FUSE := true
+TW_EXCLUDE_ENCRYPTED_BACKUPS := true
+TW_NO_HAPTICS := true
+TW_NO_USB_STORAGE := true
+TW_INCLUDE_JPEG := false
+TW_INCLUDE_PNG := false
+TWRP_INCLUDE_LOGCAT := false
+TARGET_USES_LOGD := false
+TW_USE_MINUI_WITH_MEDIA := false
+TW_USE_MINUI_WITH_FONTS := false
