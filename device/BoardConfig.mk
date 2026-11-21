@@ -135,7 +135,7 @@ TW_EXCLUDE_APEX := true
 TW_EXCLUDE_MTP := true
 TW_NO_EXFAT := true
 TW_NO_EXFAT_FUSE := true
-TW_EXCLUDE_ENCRYPTED_BACKUPS := true
+# TW_EXCLUDE_ENCRYPTED_BACKUPS must stay EMPTY: TWRP Android.mk ifneq logic adds libopenaes when set!
 TW_NO_HAPTICS := true
 TW_NO_USB_STORAGE := true
 TW_INCLUDE_JPEG := false
