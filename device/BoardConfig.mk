@@ -102,8 +102,6 @@ TW_NO_LEGACY_PROPS := true
 TW_OVERRIDE_SYSTEM_PROPS := "ro.build.version.sdk"
 TW_INCLUDE_RESETPROP := true
 TW_INCLUDE_LIBRESETPROP := true
-TWRP_INCLUDE_LOGCAT := true
-TARGET_USES_LOGD := true
 
 # Build hacks for prebuilt-heavy tree (from working C11 tree)
 BUILD_BROKEN_DUP_RULES := true
@@ -132,7 +130,7 @@ BOARD_AVB_BOOT_ROLLBACK_INDEX_LOCATION := 1
 
 # TWRP Configuration
 TW_THEME := portrait_hdpi
-TW_EXTRA_LANGUAGES := true
+TW_EXTRA_LANGUAGES := false
 TW_SCREEN_BLANK_ON_BOOT := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_USE_TOOLBOX := true
@@ -142,7 +140,25 @@ TW_EXCLUDE_TZDATA := true
 TW_EXCLUDE_NANO := true
 TW_EXCLUDE_BASH := true
 TW_EXCLUDE_PYTHON := true
-TW_INCLUDE_NTFS_3G := true
+TW_INCLUDE_NTFS_3G := false
 TW_INCLUDE_REPACKTOOLS := true
 TW_HAS_DOWNLOAD_MODE := false
 TW_NO_REBOOT_BOOTLOADER := false
+
+# Size: boot partition only 35MB - strip everything non-essential
+TW_EXCLUDE_SUPERSU := true
+TW_EXCLUDE_TWRPAPP := true
+TW_EXCLUDE_APEX := true
+TW_EXCLUDE_MTP := true
+TW_NO_EXFAT := true
+TW_NO_EXFAT_FUSE := true
+TW_EXCLUDE_ENCRYPTED_BACKUPS := true
+TW_NO_HAPTICS := true
+TW_NO_USB_STORAGE := true
+TW_INCLUDE_JPEG := false
+TW_INCLUDE_PNG := false
+TWRP_INCLUDE_LOGCAT := false
+TARGET_USES_LOGD := false
+TW_USE_MINUI_WITH_MEDIA := false
+TW_USE_MINUI_WITH_FONTS := false
+BOARD_HAS_NO_REAL_SDCARD := true
