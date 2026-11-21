@@ -98,8 +98,11 @@ PLATFORM_VERSION := 10
 PLATFORM_SECURITY_PATCH := 2021-11-05
 VENDOR_SECURITY_PATCH := 2021-11-05
 
-# Verified Boot: unlocked u-boot accepts any RSA4096 key but requires rollback_index >= 1
-# (RPMB img_ver=1). Footer is re-signed post-build with resign.py anyway.
+# Verified Boot: recovery is checked STRICTER than boot on this ZTE u-boot.
+# Stock recovery chain key sha1=a603b222... is required; generic keys fail for recovery
+# (boot accepts any key when unlocked, recovery does not). We re-sign post-build with
+# resign.py using the stock-matching approach; keep AVB footer generation enabled with
+# rollback_index>=1 (RPMB img_ver=1, recovery chain location=2).
 BOARD_AVB_ENABLE := true
 BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
 BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
