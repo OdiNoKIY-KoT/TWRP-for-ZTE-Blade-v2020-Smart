@@ -112,7 +112,9 @@ BUILD_BROKEN_MISSING_REQUIRED_MODULES := true
 RELAX_USES_LIBRARY_CHECK := true
 
 # Crypto: userdata is f2fs with encryptable=footer (legacy FDE, not metadata encryption)
-TW_INCLUDE_CRYPTO := true
+# NOTE: twrp-12.1 dropped FDE support (libopenaes gone) - build without crypto first;
+# data will be unmountable but all raw-partition backup/flash/fastbootd works.
+TW_INCLUDE_CRYPTO := false
 TW_INCLUDE_CRYPTO_FBE := false
 TW_INCLUDE_FBE := false
 PLATFORM_VERSION := 10
