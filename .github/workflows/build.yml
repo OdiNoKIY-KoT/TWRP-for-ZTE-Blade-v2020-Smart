@@ -1,9 +1,9 @@
-name: Build TWRP P963F05
+name: Build TWRP P963F05 (recovery-as-boot)
 
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [twrp-as-boot]
     paths:
       - 'device/**'
       - '.github/workflows/**'
@@ -63,34 +63,35 @@ jobs:
       with:
         swap-size-gb: 12
 
-    - name: Build recoveryimage
+    - name: Build bootimage (recovery-as-boot)
       run: |
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL=C
         lunch twrp_P963F05-eng
-        make recoveryimage -j$(nproc --all)
+        make bootimage -j$(nproc --all)
       working-directory: ${{ github.workspace }}/workspace
 
     - name: Collect artifacts
       run: |
         mkdir -p out
-        cp workspace/out/target/product/P963F05/recovery.img out/recovery.img
+        cp workspace/out/target/product/P963F05/boot.img out/twrp-boot.img
         ls -la workspace/out/target/product/P963F05/ | head -40
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: twrp-P963F05-recovery
-        path: out/recovery.img
+        name: twrp-P963F05-as-boot
+        path: out/twrp-boot.img
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v2
       with:
-        files: out/recovery.img
-        name: "TWRP P963F05 build ${{ github.run_id }}"
-        tag_name: "build-${{ github.run_id }}"
+        files: out/twrp-boot.img
+        name: "TWRP-as-boot P963F05 build ${{ github.run_id }}"
+        tag_name: "asboot-${{ github.run_id }}"
         body: |
-          TWRP 12.1 for ZTE Blade V2020 Smart (P963F05, SC9863A)
-          Device tree: twrpdtgen + XvSvM fixes + partition/crypto corrections
-          NOTE: flash only after re-signing with rollback_index>=1 (resign.py --partition recovery)
+          TWRP 12.1 as BOOT image for ZTE Blade V2020 Smart (P963F05, SC9863A)
+          Method: recovery-as-boot (Realme C11 RMX3235 approach)
+          Flash to BOOT partition, not recovery. Re-sign with rollback_index>=1 first.
+          Restore Magisk boot (magisk_onphone_signed.img) to return to Android.

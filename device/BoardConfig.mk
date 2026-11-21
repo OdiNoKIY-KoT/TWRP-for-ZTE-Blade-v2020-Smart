@@ -39,6 +39,8 @@ TARGET_SCREEN_DENSITY := 320
 BOARD_BOOTIMG_HEADER_VERSION := 2
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_CMDLINE := console=ttyS1,115200n8 buildvariant=user
+BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+BOARD_KERNEL_CMDLINE += androidboot.init_fatal_reboot_target=recovery
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_RAMDISK_OFFSET := 0x05400000
 BOARD_KERNEL_TAGS_OFFSET := 0x00000100
@@ -79,16 +81,37 @@ BOARD_ZTE_DYNAMIC_PARTITIONS_SIZE := 4005560320
 # Platform
 TARGET_BOARD_PLATFORM := sp9863a
 
-# Recovery
-BOARD_INCLUDE_RECOVERY_DTBO := true
+# Recovery-as-boot: TWRP lives in the boot partition (C11/Narzo50i method).
+# ZTE u-boot verifies recovery strictly but accepts any RSA4096 key for boot
+# when unlocked (proven with Magisk). Flash TWRP boot via spd_dump/fastboot,
+# restore Magisk boot afterwards.
+BOARD_USES_RECOVERY_AS_BOOT := true
+TARGET_NO_RECOVERY := true
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 BOARD_HAS_NO_REAL_SDCARD := true
 RECOVERY_SDCARD_ON_DATA := true
-TW_MAX_BRIGHTNESS := 255
-TW_DEFAULT_BRIGHTNESS := 128
+TW_MAX_BRIGHTNESS := 4000
+TW_DEFAULT_BRIGHTNESS := 1500
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/sprd_backlight/brightness"
+TW_INCLUDE_FASTBOOTD := true
+TW_EXCLUDE_DEFAULT_USB_INIT := true
+TW_EXCLUDE_TWRPAPP := true
+TW_NO_LEGACY_PROPS := true
+TW_OVERRIDE_SYSTEM_PROPS := "ro.build.version.sdk"
+TW_INCLUDE_RESETPROP := true
+TW_INCLUDE_LIBRESETPROP := true
+TWRP_INCLUDE_LOGCAT := true
+TARGET_USES_LOGD := true
+
+# Build hacks for prebuilt-heavy tree (from working C11 tree)
+BUILD_BROKEN_DUP_RULES := true
+BUILD_BROKEN_USES_BUILD_COPY_HEADERS := true
+BUILD_BROKEN_PREBUILT_ELF_FILES := true
+BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+BUILD_BROKEN_MISSING_REQUIRED_MODULES := true
+RELAX_USES_LIBRARY_CHECK := true
 
 # Crypto: userdata is f2fs with encryptable=footer (legacy FDE, not metadata encryption)
 TW_INCLUDE_CRYPTO := true
@@ -98,16 +121,14 @@ PLATFORM_VERSION := 10
 PLATFORM_SECURITY_PATCH := 2021-11-05
 VENDOR_SECURITY_PATCH := 2021-11-05
 
-# Verified Boot: recovery is checked STRICTER than boot on this ZTE u-boot.
-# Stock recovery chain key sha1=a603b222... is required; generic keys fail for recovery
-# (boot accepts any key when unlocked, recovery does not). We re-sign post-build with
-# resign.py using the stock-matching approach; keep AVB footer generation enabled with
-# rollback_index>=1 (RPMB img_ver=1, recovery chain location=2).
+# Verified Boot: boot partition accepts any RSA4096 key when unlocked,
+# rollback_index must be >= 1 (RPMB img_ver=1). Boot chain location=1.
+# Footer re-signed post-build with resign.py --partition boot anyway.
 BOARD_AVB_ENABLE := true
-BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
-BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
-BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
-BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 2
+BOARD_AVB_BOOT_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
+BOARD_AVB_BOOT_ALGORITHM := SHA256_RSA4096
+BOARD_AVB_BOOT_ROLLBACK_INDEX := 1
+BOARD_AVB_BOOT_ROLLBACK_INDEX_LOCATION := 1
 
 # TWRP Configuration
 TW_THEME := portrait_hdpi
